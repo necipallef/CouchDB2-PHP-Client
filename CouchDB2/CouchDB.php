@@ -50,6 +50,30 @@ class CouchDB extends Couch
 
     #region executions
 
+
+    public function find()
+    {
+        $method_url = $this->get_method_url('_find');
+        list($is_method_get, $query, $data) = $this->prepare_query();
+
+        if (strlen($query) > 0) {
+            $method_url = sprintf('%s?%s', $method_url, $query);
+
+        }
+
+        if ($is_method_get) {
+            $response = Requests::get($method_url, $this->default_headers, $this->default_request_options);
+        } else {
+            $response = Requests::post($method_url, $this->default_headers, $data, $this->default_request_options);
+        }
+
+        $response = $this->test_response($response, [200]);
+        if (isset($response->body)) {
+            return $response->body;
+        }
+        return $response;
+    }
+
     public function get_info()
     {
         $method_url = $this->get_database_url();
@@ -480,6 +504,30 @@ class CouchDB extends Couch
     #endregion
 
     #region queries
+
+    public function selector($value)
+    {
+        $this->add_query_params('selector', $value, 'json_encode');
+        return $this;
+    }
+
+    public function use_index($value)
+    {
+        $this->add_query_params('use_index', $value, 'json_encode');
+        return $this;
+    }
+
+    public function fields($value)
+    {
+        $this->add_query_params('fields', $value, 'json_encode');
+        return $this;
+    }
+
+    public function sort($value)
+    {
+        $this->add_query_params('sort', $value, 'json_encode');
+        return $this;
+    }
 
     public function feed($value)
     {
