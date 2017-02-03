@@ -50,6 +50,18 @@ class CouchDB extends Couch
 
     #region executions
 
+    public function save_index($doc_id, $index_name, $index)
+    {
+        $method_url = $this->get_method_url('_index');
+        $additional_parameters = ['index' => $index, 'ddoc' => $doc_id, 'name' => $index_name];
+
+        $response = Requests::post($method_url, $this->default_headers, json_encode($additional_parameters), $this->default_request_options);
+        $response = $this->test_response($response, [200]);
+        if (isset($response->body)) {
+            return $response->body;
+        }
+        return $response;
+    }
 
     public function find()
     {
